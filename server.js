@@ -77,16 +77,23 @@ app.get('/', (req, res) => {
                 console.log("Sum of nuclear: ", rows.nuclear_sum);
                 console.log("Sum of petroleum: ", rows.petroleum_sum);
                 console.log("Sum of renewable: ", rows.renewable_sum);
-                // Modify values at the top of index.html:
+                
+                // Modify values of variables at the top of the file:
                 response = response.replace("!!!coal_count!!!", rows.coal_sum);
                 response = response.replace("!!!natural_gas_count!!!", rows.natural_gas_sum);
                 response = response.replace("!!!nuclear_count!!!", rows.nuclear_sum);
                 response = response.replace("!!!petroleum_count!!!", rows.petroleum_sum);
                 response = response.replace("!!!renewable_count!!!", rows.renewable_sum);
 
-                //Modify values for the table:
+                //Modify values for the table at the bottom of the file:
                 data = "";
-                data = data + "";
+                data = data + "<td></td>\n"; //State
+                data = data + "<td></td>\n"; //Coal
+                data = data + "<td></td>\n"; //Natural_gas
+                data = data + "<td></td>\n"; //Nuclear
+                data = data + "<td></td>\n"; //Petroleum
+                data = data + "<td></td>\n"; //Renewable
+                response = response.replace("<!-- Data to be inserted here -->", data);
             }   //else
         });
         console.log(response);
