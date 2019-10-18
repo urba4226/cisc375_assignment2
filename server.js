@@ -21,34 +21,8 @@ var db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
     }
     else {
         console.log('Now connected to ' + db_filename);
-        Testsql();
     }
 });
-
-function Testsql()
-{
-    let query = "SELECT sum(coal) as coal_sum, ";
-    query = query + "sum(natural_gas) as natural_gas_sum, ";
-    query = query + "sum(nuclear) as nuclear_sum, ";
-    query = query + "sum(petroleum) as petroleum_sum, ";
-    query = query + "sum(renewable) as renewable_sum FROM Consumption WHERE year=? GROUP BY year";
-    console.log(query);
-    db.get(query, ["2017"], (err, rows) =>
-    {
-        if (err)
-        {
-            console.log("Error retrieving data from database");
-        }   //if
-        else
-        {
-            console.log("Sum of coal: ", rows.coal_sum);
-            console.log("Sum of natural_gas: ", rows.natural_gas_sum);
-            console.log("Sum of nuclear: ", rows.nuclear_sum);
-            console.log("Sum of petroleum: ", rows.petroleum_sum);
-            console.log("Sum of renewable: ", rows.renewable_sum);
-        }   //else
-    });
-}   //Testsql
 
 app.use(express.static(public_dir));
 
@@ -57,7 +31,6 @@ app.use(express.static(public_dir));
 app.get('/', (req, res) => {
     ReadFile(path.join(template_dir, 'index.html')).then((template) => {
         let response = template;
-        console.log(response);
         // modify `response` here
         let query = "SELECT sum(coal) as coal_sum, ";
         query = query + "sum(natural_gas) as natural_gas_sum, ";
@@ -77,7 +50,7 @@ app.get('/', (req, res) => {
                 console.log("Sum of nuclear: ", rows.nuclear_sum);
                 console.log("Sum of petroleum: ", rows.petroleum_sum);
                 console.log("Sum of renewable: ", rows.renewable_sum);
-                
+
                 // Modify values of variables at the top of the file:
                 response = response.replace("!!!coal_count!!!", rows.coal_sum);
                 response = response.replace("!!!natural_gas_count!!!", rows.natural_gas_sum);
