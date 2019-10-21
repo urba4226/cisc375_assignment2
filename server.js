@@ -67,7 +67,7 @@ app.get('/', (req, res) => {
                     {
                         //Modify values for the table at the bottom of the file:
                         let coal_sum = 0;
-                        for (var i = 0; i < rows.length; i++)
+                        for (let i = 0; i < rows.length; i++)
                         {
                             data = data + "<tr>\n";
                             data = data + "    <td>" + rows[i].state_abbreviation + "</td>\n"; //State
