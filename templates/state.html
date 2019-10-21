@@ -11,12 +11,12 @@
     <script type="application/javascript" src="/scripts/statevis.js"></script>
     <script type="application/javascript">
         // `state` and arrays of consumption per year --> set these variables equal to appropriate value
-        var state;
-        var coal_counts;  // e.g. [1234, 2567, ...]
-        var natural_gas_counts;
-        var nuclear_counts;
-        var petroleum_counts;
-        var renewable_counts;
+        var state = !!!state!!!;
+        var coal_counts = !!!coal_counts!!!;  // e.g. [1234, 2567, ...]
+        var natural_gas_counts !!!natural_gas_counts!!!;
+        var nuclear_counts = !!!nuclear_counts!!!;
+        var petroleum_counts = !!!petroleum_counts!!!;
+        var renewable_counts = !!!renewable_counts!!!;
     </script>
 </head>
 <body onload="Init()">
@@ -45,11 +45,11 @@
 
             <div>
                 <div class="left">
-                    <h2>Yearly Snapshot</h2> <!-- change header to include state (e.g. Minnesota Yearly Snaphot) -->
+                    <h2>!!!Header!!! Yearly Snapshot</h2> <!-- change header to include state (e.g. Minnesota Yearly Snaphot) -->
                 </div>
                 <div class="right">
-                    <a class="prev_next" href="">XX</a> <!-- change XX to prev state, link to WY if state is AK -->
-                    <a class="prev_next" href="">XX</a> <!-- change XX to next state, link to AK if state is WY -->
+                    <a class="prev_next" href="">!!!prev!!!</a> <!-- change XX to prev state, link to WY if state is AK -->
+                    <a class="prev_next" href="">!!!next!!!</a> <!-- change XX to next state, link to AK if state is WY -->
                 </div>
                 <div class="spacer1"></div>
                 <div class="left">
