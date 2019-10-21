@@ -26,7 +26,6 @@ var db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
 
 app.use(express.static(public_dir));
 
-
 // GET request handler for '/'
 app.get('/', (req, res) => {
     ReadFile(path.join(template_dir, 'index.html')).then((template) => {
@@ -45,12 +44,6 @@ app.get('/', (req, res) => {
             }   //if
             else
             {
-                console.log("Sum of coal: ", rows.coal_sum);
-                console.log("Sum of natural_gas: ", rows.natural_gas_sum);
-                console.log("Sum of nuclear: ", rows.nuclear_sum);
-                console.log("Sum of petroleum: ", rows.petroleum_sum);
-                console.log("Sum of renewable: ", rows.renewable_sum);
-
                 // Modify values of variables at the top of the file:
                 response = response.replace("!!!coal_count!!!", rows.coal_sum);
                 response = response.replace("!!!natural_gas_count!!!", rows.natural_gas_sum);
@@ -58,24 +51,46 @@ app.get('/', (req, res) => {
                 response = response.replace("!!!petroleum_count!!!", rows.petroleum_sum);
                 response = response.replace("!!!renewable_count!!!", rows.renewable_sum);
 
-                //Modify values for the table at the bottom of the file:
-                data = "";
-                data = data + "<td></td>\n"; //State
-                data = data + "<td></td>\n"; //Coal
-                data = data + "<td></td>\n"; //Natural_gas
-                data = data + "<td></td>\n"; //Nuclear
-                data = data + "<td></td>\n"; //Petroleum
-                data = data + "<td></td>\n"; //Renewable
-                response = response.replace("<!-- Data to be inserted here -->", data);
+                //Retrieve data for the table at the bottom of the file:
+                let query = "SELECT *";
+                query = query + "FROM Consumption WHERE year=?"; 
+                query = query + "GROUP BY year, state_abbreviation ";
+                query = query + "Order BY state_abbreviation";
+                let data = "";
+                db.all(query, ["2017"], (err, rows) =>
+                {
+                    if (err)
+                    {
+                        console.log("Error retrieving data from database");
+                    }   //if
+                    else
+                    {
+                        //Modify values for the table at the bottom of the file:
+                        let coal_sum = 0;
+                        for (var i = 0; i < rows.length; i++)
+                        {
+                            data = data + "<tr>\n";
+                            data = data + "    <td>" + rows[i].state_abbreviation + "</td>\n"; //State
+                            data = data + "    <td>" + rows[i].coal + "</td>\n"; //Coal
+                            data = data + "    <td>" + rows[i].natural_gas + "</td>\n"; //Natural_gas
+                            data = data + "    <td>" + rows[i].nuclear + "</td>\n"; //Nuclear
+                            data = data + "    <td>" + rows[i].petroleum + "</td>\n"; //Petroleum
+                            data = data + "    <td>" + rows[i].renewable + "</td>\n"; //Renewable
+                            data = data + "</tr>\n";
+                            coal_sum = coal_sum + rows[i].coal;
+                        }   //for
+                        
+                        response = response.replace("<!-- Data to be inserted here -->", data);
+                        WriteHtml(res, response);
+                    }   //else
+                }); //db.all
             }   //else
-        });
-        console.log(response);
+        }); //db.get
 
-        WriteHtml(res, response);
     }).catch((err) => {
         Write404Error(res);
-    });
-});
+    }); //catch
+}); //app.get
 
 // GET request handler for '/year/*'
 app.get('/year/:selected_year', (req, res) => {
