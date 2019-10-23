@@ -52,8 +52,8 @@ app.get('/', (req, res) => {
                 response = response.replace("!!!renewable_count!!!", rows.renewable_sum);
 
                 //Retrieve data for the table at the bottom of the file:
-                let query = "SELECT *";
-                query = query + "FROM Consumption WHERE year=?"; 
+                let query = "SELECT * ";
+                query = query + "FROM Consumption WHERE year=? "; 
                 query = query + "GROUP BY year, state_abbreviation ";
                 query = query + "Order BY state_abbreviation";
                 let data = "";
@@ -66,7 +66,6 @@ app.get('/', (req, res) => {
                     else
                     {
                         //Modify values for the table at the bottom of the file:
-                        let coal_sum = 0;
                         for (let i = 0; i < rows.length; i++)
                         {
                             data = data + "<tr>\n";
@@ -77,7 +76,6 @@ app.get('/', (req, res) => {
                             data = data + "    <td>" + rows[i].petroleum + "</td>\n"; //Petroleum
                             data = data + "    <td>" + rows[i].renewable + "</td>\n"; //Renewable
                             data = data + "</tr>\n";
-                            coal_sum = coal_sum + rows[i].coal;
                         }   //for
                         
                         response = response.replace("<!-- Data to be inserted here -->", data);
