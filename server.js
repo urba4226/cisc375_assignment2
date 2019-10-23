@@ -26,6 +26,7 @@ var db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
 
 app.use(express.static(public_dir));
 
+
 // GET request handler for '/'
 app.get('/', (req, res) => {
     ReadFile(path.join(template_dir, 'index.html')).then((template) => {
@@ -106,7 +107,74 @@ app.get('/state/:selected_state', (req, res) => {
     ReadFile(path.join(template_dir, 'state.html')).then((template) => {
         let response = template;
         // modify `response` here
-        WriteHtml(res, response);
+        let query = "SELECT * ";
+        query = query + "FROM Consumption natural join States ";
+        query = query + "WHERE state_abbreviation = ? ";
+        query = query + "ORDER BY year";
+        db.all(query, [req.params.selected_state], (err, rows) =>
+        {
+            if (err)
+            {
+                // DOES NOT WORK YET
+                let msg = "Error: no data for state ";
+                msg = msg + req.params.selected_state;
+                console.log(msg);
+            }   //if
+            else
+            {
+                // Modify values of variables at the top of the file:
+                let coal_counts = "[" + rows[0].coal;
+                let natural_gas_counts = "[" + rows[0].natural_gas;
+                let nuclear_counts = "[" + rows[0].nuclear;
+                let petroleum_counts = "[" + rows[0].petroleum;
+                let renewable_counts = "[" + rows[0].renewable;
+                for (let i = 1; i < rows.length; i++)
+                {
+                    coal_counts = coal_counts + ", " + rows[i].coal;
+                    natural_gas_counts = natural_gas_counts + ", " + rows[i].natural_gas;
+                    nuclear_counts = nuclear_counts + ", " + rows[i].nuclear;
+                    petroleum_counts = petroleum_counts + ", " + rows[i].petroleum;
+                    renewable_counts = renewable_counts + ", " + rows[i].renewable;
+                }   //for
+                coal_counts = coal_counts + "]";
+                natural_gas_counts = natural_gas_counts + "]";
+                nuclear_counts = nuclear_counts + "]";
+                petroleum_counts = petroleum_counts + "]";
+                renewable_counts = renewable_counts + "]";
+
+                response = response.replace("!!!state!!!", rows[0].state_abbreviation);
+                response = response.replace("!!!coal_counts!!!", coal_counts);
+                response = response.replace("!!!natural_gas_counts!!!", natural_gas_counts);
+                response = response.replace("!!!nuclear_counts!!!", nuclear_counts);
+                response = response.replace("!!!petroleum_counts!!!", petroleum_counts);
+                response = response.replace("!!!renewable_counts!!!", renewable_counts);
+
+                //Modify header to include state name:
+                response = response.replace("!!!Header!!!", rows[0].state_name);
+                //Modify prev and next buttons here
+
+                //Modify values for the table at the bottom of the file:
+                let data = "";
+                for (let i = 0; i < rows.length; i++)
+                {
+                    let total = rows[i].coal + rows[i].natural_gas + rows[i].nuclear;
+                    total = total + rows[i].petroleum + rows[i].renewable;
+                    data = data + "<tr>\n";
+                    data = data + "    <td>" + rows[i].year + "</td>\n"; //Year
+                    data = data + "    <td>" + rows[i].coal + "</td>\n"; //Coal
+                    data = data + "    <td>" + rows[i].natural_gas + "</td>\n"; //Natural_gas
+                    data = data + "    <td>" + rows[i].nuclear + "</td>\n"; //Nuclear
+                    data = data + "    <td>" + rows[i].petroleum + "</td>\n"; //Petroleum
+                    data = data + "    <td>" + rows[i].renewable + "</td>\n"; //Renewable
+                    data = data + "    <td>" + total + "</td>\n"; //Total
+                    data = data + "</tr>\n";
+                }   //for
+                
+                response = response.replace("<!-- Data to be inserted here -->", data);
+
+                WriteHtml(res, response);
+            }   //else
+        }); //db.all
     }).catch((err) => {
         Write404Error(res);
     });
