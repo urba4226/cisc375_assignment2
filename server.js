@@ -151,6 +151,8 @@ app.get('/state/:selected_state', (req, res) => {
 
                 //Modify header to include state name:
                 response = response.replace("!!!Header!!!", rows[0].state_name);
+                //Modify title to include state abbreviation:
+                response = response.replace("!!!state_abbreviation!!!", req.params.selected_state);
                 //Modify prev and next buttons here
 
                 //Modify values for the table at the bottom of the file:
