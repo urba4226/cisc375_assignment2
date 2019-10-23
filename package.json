@@ -3,23 +3,19 @@
     "version": "0.0.0",
     "description": "Dynamic Web Server using Node JS",
     "author": {
-        "name": "",
-        "email": ""
+        "name": "Tucker Urbanski",
+        "email": "urba4226@stthomas.edu"
     },
     "contributors": [
         {
-            "name": "",
-            "email": ""
-        },
-        {
-            "name": "",
-            "email": ""
+            "name": "Owen Kochevar",
+            "email": "koch8697@stthomas.edu"
         }
     ],
     "main": "server.js",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/urba4226/cisc375_assignment2.git"
     },
     "dependencies": {
         "express": "^4.17.1",
