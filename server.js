@@ -56,7 +56,6 @@ app.get('/', (req, res) => {
                 query = query + "FROM Consumption WHERE year=? "; 
                 query = query + "GROUP BY year, state_abbreviation ";
                 query = query + "Order BY state_abbreviation";
-                let data = "";
                 db.all(query, ["2017"], (err, rows) =>
                 {
                     if (err)
@@ -66,6 +65,7 @@ app.get('/', (req, res) => {
                     else
                     {
                         //Modify values for the table at the bottom of the file:
+                        let data = "";
                         for (let i = 0; i < rows.length; i++)
                         {
                             data = data + "<tr>\n";
