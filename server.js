@@ -26,6 +26,12 @@ var db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
 
 app.use(express.static(public_dir));
 
+//Array of state abbreviations to populate next and prev buttons:
+var states = ['AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA', 'HI', 'IA', 'ID', 'IL', 'IN',
+              'KS', 'KY', 'LA', 'MA', 'MD', 'ME', 'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ',
+              'NM', 'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VT', 'WA',
+              'WI', 'WV', 'WY'];
+
 
 // GET request handler for '/'
 app.get('/', (req, res) => {
@@ -115,11 +121,15 @@ app.get('/state/:selected_state', (req, res) => {
         {
             if (err)
             {
-                // DOES NOT WORK YET
+                let msg = "Error: could not retrieve data from database";
+                Write404Error(res, msg);
+            }   //if
+            else if (rows.length < 1)
+            {
                 let msg = "Error: no data for state ";
                 msg = msg + req.params.selected_state;
-                console.log(msg);
-            }   //if
+                Write404Error(res, msg);
+            }   //else if
             else
             {
                 // Modify values of variables at the top of the file:
@@ -154,6 +164,13 @@ app.get('/state/:selected_state', (req, res) => {
                 //Modify title to include state abbreviation:
                 response = response.replace("!!!state_abbreviation!!!", req.params.selected_state);
                 //Modify prev and next buttons here
+                let index = states.indexOf(req.params.selected_state);
+                let prev = (index - 1 + states.length) % states.length;
+                let next = (index + 1) % states.length;
+                response = response.replace("!!!prev!!!", states[prev]);
+                response = response.replace("!!!next!!!", states[next]);
+                //Send the proper html when buttons are clicked:
+                //NOT DONE YET
 
                 //Modify values for the table at the bottom of the file:
                 let data = "";
@@ -206,9 +223,9 @@ function ReadFile(filename) {
     });
 }
 
-function Write404Error(res) {
+function Write404Error(res, msg) {
     res.writeHead(404, {'Content-Type': 'text/plain'});
-    res.write('Error: file not found');
+    res.write(msg);
     res.end();
 }
 
