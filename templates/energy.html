@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <title>US Energy Consumption</title> <!-- change title to include energy type (e.g. US Coal Consumption) -->
+    <title>US !!!Title!!! Consumption</title> <!-- change title to include energy type (e.g. US Coal Consumption) -->
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://cdn.anychart.com/releases/8.7.0/js/anychart-core.min.js"></script>
     <script src="https://cdn.anychart.com/releases/8.7.0/js/anychart-cartesian.min.js"></script>
@@ -11,8 +11,8 @@
     <script type="application/javascript" src="/scripts/energyvis.js"></script>
     <script type="application/javascript">
         // `energy_type` and object of consumption per year per state --> set these variables equal to appropriate value
-        var energy_type;
-        var energy_counts;  // e.g. {AK: [...], AL: [...], AR: [...], ...}
+        var energy_type = !!!energy_type!!!;
+        var energy_counts = !!!energy_counts!!!;  // e.g. {AK: [...], AL: [...], AR: [...], ...}
     </script>
 </head>
 <body onload="Init()">
@@ -41,11 +41,11 @@
 
             <div>
                 <div class="left">
-                    <h2>Consumption Snapshot</h2> <!-- change header to include energy type (e.g. Coal Consumption Snaphot) -->
+                    <h2>!!!Header!!! Consumption Snapshot</h2> <!-- change header to include energy type (e.g. Coal Consumption Snaphot) -->
                 </div>
                 <div class="right">
-                    <a class="prev_next" href="">XX</a> <!-- change XX to prev enery type, link to Renewable if energy is Coal -->
-                    <a class="prev_next" href="">XX</a> <!-- change XX to next enery type, link to Coal if energy is Renewable -->
+                    <a class="prev_next" href="!!!prev_link!!!">!!!prev!!!</a> <!-- change XX to prev enery type, link to Renewable if energy is Coal -->
+                    <a class="prev_next" href="!!!next_link!!!">!!!next!!!</a> <!-- change XX to next enery type, link to Coal if energy is Renewable -->
                 </div>
                 <div class="spacer1"></div>
                 <div class="left">
