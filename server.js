@@ -168,9 +168,9 @@ app.get('/state/:selected_state', (req, res) => {
                 let prev = (index - 1 + states.length) % states.length;
                 let next = (index + 1) % states.length;
                 response = response.replace("!!!prev!!!", states[prev]);
+                response = response.replace("!!!prev_link!!!", '/state/' + states[prev]);
                 response = response.replace("!!!next!!!", states[next]);
-                //Send the proper html when buttons are clicked:
-                //NOT DONE YET
+                response = response.replace("!!!next_link!!!", '/state/' + states[next]);
 
                 //Modify values for the table at the bottom of the file:
                 let data = "";
@@ -204,7 +204,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
     ReadFile(path.join(template_dir, 'energy.html')).then((template) => {
         let response = template;
         // modify `response` here
-        WriteHtml(res, response);
+            WriteHtml(res, response);
     }).catch((err) => {
         Write404Error(res);
     });
