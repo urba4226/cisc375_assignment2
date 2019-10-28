@@ -32,6 +32,10 @@ var states = ['AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA', 
               'NM', 'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VT', 'WA',
               'WI', 'WV', 'WY'];
 
+//Arrays of energy types to populate next and prev buttons:
+var energy = ['coal', 'natural_gas', 'nuclear', 'petroleum', 'renewable'];
+var fullenergy = ['Coal', 'Natural Gas', 'Nuclear', 'Petroleum', 'Renewable'];
+
 
 // GET request handler for '/'
 app.get('/', (req, res) => {
@@ -93,7 +97,8 @@ app.get('/', (req, res) => {
         }); //db.get
 
     }).catch((err) => {
-        Write404Error(res);
+        let msg = 'Error: file not found';
+        Write404Error(res, msg);
     }); //catch
 }); //app.get
 
@@ -104,7 +109,8 @@ app.get('/year/:selected_year', (req, res) => {
         // modify `response` here
         WriteHtml(res, response);
     }).catch((err) => {
-        Write404Error(res);
+        let msg = 'Error: file not found';
+        Write404Error(res, msg);
     });
 });
 
@@ -195,7 +201,8 @@ app.get('/state/:selected_state', (req, res) => {
             }   //else
         }); //db.all
     }).catch((err) => {
-        Write404Error(res);
+        let msg = 'Error: file not found';
+        Write404Error(res, msg);
     });
 });
 
@@ -204,9 +211,56 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
     ReadFile(path.join(template_dir, 'energy.html')).then((template) => {
         let response = template;
         // modify `response` here
-            WriteHtml(res, response);
+        let query = "SELECT * ";
+        query = query + "FROM Consumption ";
+        query = query + "GROUP BY state_abbreviation ";
+        query = query + "ORDER BY year"
+        db.all(query, (err, rows) =>
+        {
+            if (err)
+            {
+                let msg = "Error: could not retrieve data from database";
+                Write404Error(res, msg);
+            }   //if
+            else if (rows.length < 1)
+            {
+                let msg = "Error: no data for energy type: ";
+                msg = msg + req.params.selected_energy_type;
+                Write404Error(res, msg);
+            }   //else if
+            else
+            {
+                // Modify values of variables at the top of the file:
+                /*
+                let energy_counts = "{" + rows[0].state_abbreviation + ": [" + rows[0][req.params.selected_energy_type] + "]";
+                for (let i = 1; i < rows.length; i++)
+                {
+                    energy_counts = energy_counts + ", " + rows[i].state_abbreviation;
+                    energy_counts = energy_counts + ": [" + rows[i][req.params.selected_energy_type] + "]";
+                }   //for
+                energy_counts = energy_counts + "}";
+                console.log(energy_counts);
+                response = response.replace("!!!energy_type!!!", req.params.selected_energy_type);
+                */
+                
+                //Modify header to include energy type:
+                let index = energy.indexOf(req.params.selected_energy_type);
+                response = response.replace("!!!Header!!!", fullenergy[index]);
+                //Modify title to include energy type:
+                response = response.replace("!!!Title!!!", fullenergy[index]);
+                //Modify prev and next buttons here
+                let prev = (index - 1 + energy.length) % energy.length;
+                let next = (index + 1) % energy.length;
+                response = response.replace("!!!prev!!!", fullenergy[prev]);
+                response = response.replace("!!!prev_link!!!", '/energy-type/' + energy[prev]);
+                response = response.replace("!!!next!!!", fullenergy[next]);
+                response = response.replace("!!!next_link!!!", '/energy-type/' + energy[next]);
+                WriteHtml(res, response);
+            }   //else
+        }); //db.all
     }).catch((err) => {
-        Write404Error(res);
+        let msg = 'Error: file not found';
+        Write404Error(res, msg);
     });
 });
 
