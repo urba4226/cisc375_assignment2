@@ -105,9 +105,65 @@ app.get('/', (req, res) => {
 // GET request handler for '/year/*'
 app.get('/year/:selected_year', (req, res) => {
     ReadFile(path.join(template_dir, 'year.html')).then((template) => {
-        let response = template;
-        // modify `response` here
-        WriteHtml(res, response);
+                let response = template;
+		// modify `response` here
+		var state = 0;
+        var table = '';
+		var coal_sum = 0;
+		var natural_gas_sum = 0;
+		var nuclear_sum = 0;
+		var petroleum_sum = 0;
+		var renewable_sum = 0;
+
+		let query = "SELECT coal, natural_gas, nuclear, petroleum, renewable FROM Consumption WHERE year=?";
+		
+		db.all(query, [req.params.selected_year], (err, rows) => {
+			if(err) {
+				console.log("err");
+			}
+			else {
+				
+				rows.forEach((row) => {
+					var row_sum = row.coal + row.natural_gas + row.nuclear + row.petroleum + row.renewable;
+					table += "<tr><td>" + states[state] + "</td><td>" + row.coal + "</td><td>" + row.natural_gas + "</td><td>" + row.nuclear + "</td><td>" + row.petroleum + "</td><td>" + row.renewable + "</td><td>" + row_sum + "</td></tr>"
+					
+					coal_sum += row.coal;
+					natural_gas_sum += row.natural_gas;
+					nuclear_sum += row.nuclear;
+					petroleum_sum += row.petroleum;
+					renewable_sum += row.renewable;
+					state++;
+				});		
+			
+				var prevYear = req.params.selected_year - 1;
+				var nextYear = parseInt(req.params.selected_year) + 1;
+
+				response = response.toString().replace('<tbody>', '<tbody>' + table);
+				response = response.toString().replace('US Energy Consumption</title>', req.params.selected_year + ' US Energy Consumption</title>');
+				response = response.toString().replace('National Snapshot', req.params.selected_year + ' National Snapshot');
+				response = response.toString().replace('var year', 'var year = ' + req.params.selected_year);
+				response = response.toString().replace('var coal_count', 'var coal_count = ' + coal_sum);
+				response = response.toString().replace('var natural_gas_count', 'var natural_gas_count = ' + natural_gas_sum);
+				response = response.toString().replace('var nuclear_count', 'var nuclear_count = ' + nuclear_sum);
+				response = response.toString().replace('var petroleum_count', 'var petroleum_count = ' + petroleum_sum);
+				response = response.toString().replace('var renewable_count', 'var renewable_count = ' + renewable_sum );
+				
+				if(req.params.selected_year == 1960) {
+					response = response.toString().replace('">Prev</a>', '/year/1960">Prev</a>');
+					response = response.toString().replace('">Next</a>', '/year/' + nextYear + '">Next</a>');
+				}
+				else if(req.params.selected_year == 2017){
+					response = response.toString().replace('">Prev</a>', '/year/' + prevYear + '">Prev</a>');
+					response = response.toString().replace('">Next</a>', '/year/2017">Next</a>');
+				}
+				else {
+					response = response.toString().replace('">Prev</a>', '/year/' + prevYear + '">Prev</a>');
+					response = response.toString().replace('">Next</a>', '/year/' + nextYear + '">Next</a>');
+				}
+				WriteHtml(res, response);
+
+			}
+		});
     }).catch((err) => {
         let msg = 'Error: file not found';
         Write404Error(res, msg);
