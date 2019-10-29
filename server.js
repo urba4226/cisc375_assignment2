@@ -358,7 +358,9 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                             }   //else
                             total = total + rows[i][req.params.selected_energy_type];
                         }   //for
-                        
+			data = data + "    <td>" + total + "</td>\n"; //Total
+                        data = data + "</tr>\n";
+			
                         response = response.replace("<!-- Data to be inserted here -->", data);
                         
                         WriteHtml(res, response);
