@@ -269,8 +269,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
         // modify `response` here
         let query = "SELECT * ";
         query = query + "FROM Consumption ";
-        query = query + "GROUP BY state_abbreviation ";
-        query = query + "ORDER BY year"
+        query = query + "ORDER BY state_abbreviation, year";
         db.all(query, (err, rows) =>
         {
             if (err)
@@ -287,20 +286,25 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
             else
             {
                 // Modify values of variables at the top of the file:
-                /*
-                let energy_counts = "{" + rows[0].state_abbreviation + ": [" + rows[0][req.params.selected_energy_type] + "]";
+                let energy_counts = "{" + rows[0].state_abbreviation + ": [" + rows[0][req.params.selected_energy_type];
                 for (let i = 1; i < rows.length; i++)
                 {
-                    energy_counts = energy_counts + ", " + rows[i].state_abbreviation;
-                    energy_counts = energy_counts + ": [" + rows[i][req.params.selected_energy_type] + "]";
+                    if (rows[i].state_abbreviation != rows[i-1].state_abbreviation)
+                    {
+                        energy_counts = energy_counts + "], " + rows[i].state_abbreviation;
+                        energy_counts = energy_counts +  ": [" + rows[i][req.params.selected_energy_type];
+                    }   //if
+                    else
+                    {
+                        energy_counts = energy_counts + ", " + rows[i][req.params.selected_energy_type];
+                    }   //else
                 }   //for
-                energy_counts = energy_counts + "}";
-                console.log(energy_counts);
-                response = response.replace("!!!energy_type!!!", req.params.selected_energy_type);
-                */
-                
-                //Modify header to include energy type:
+                energy_counts = energy_counts + "]}";
                 let index = energy.indexOf(req.params.selected_energy_type);
+                response = response.replace("!!!energy_counts!!!", energy_counts);
+                response = response.replace("!!!energy_type!!!", fullenergy[index]);
+
+                //Modify header to include energy type:
                 response = response.replace("!!!Header!!!", fullenergy[index]);
                 //Modify title to include energy type:
                 response = response.replace("!!!Title!!!", fullenergy[index]);
@@ -311,7 +315,55 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                 response = response.replace("!!!prev_link!!!", '/energy-type/' + energy[prev]);
                 response = response.replace("!!!next!!!", fullenergy[next]);
                 response = response.replace("!!!next_link!!!", '/energy-type/' + energy[next]);
-                WriteHtml(res, response);
+
+                //Modify values for the table at the bottom of the file:
+                query = "SELECT * ";
+                query = query + "FROM Consumption ";
+                query = query + "ORDER BY year, state_abbreviation";
+                db.all(query, (err, rows) =>
+                {
+                    if (err)
+                    {
+                        let msg = "Error: could not retrieve data from database";
+                        Write404Error(res, msg);
+                    }   //if
+                    else if (rows.length < 1)
+                    {
+                        let msg = "Error: no data for energy type: ";
+                        msg = msg + req.params.selected_energy_type;
+                        Write404Error(res, msg);
+                    }   //else if
+                    else
+                    {
+                        let total = 0;
+                        let data = "<tr>\n";
+                        data = data + "    <td>" + rows[0].year + "</td>\n";
+                        data = data + "    <td>" + rows[0][req.params.selected_energy_type] + "</td>\n";
+                        total = total + rows[0][req.params.selected_energy_type];
+                        for (let i = 1; i < rows.length; i++)
+                        {
+                            //If different year, end the current row and start a new one:
+                            if (rows[i].year != rows[i-1].year)
+                            {
+                                data = data + "    <td>" + total + "</td>\n"; //Total
+                                total = 0;
+                                data = data + "</tr>\n";
+                                data = data + "<tr>\n"
+                                data = data + "    <td>" + rows[i].year + "</td>\n"; //Year
+                                data = data + "    <td>" + rows[i][req.params.selected_energy_type] + "</td>\n";
+                            }   //if
+                            else
+                            {
+                                data = data + "    <td>" + rows[i][req.params.selected_energy_type] + "</td>\n";
+                            }   //else
+                            total = total + rows[i][req.params.selected_energy_type];
+                        }   //for
+                        
+                        response = response.replace("<!-- Data to be inserted here -->", data);
+                        
+                        WriteHtml(res, response);
+                    }   //else
+                }); //db.all
             }   //else
         }); //db.all
     }).catch((err) => {
