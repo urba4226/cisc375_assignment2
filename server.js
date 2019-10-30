@@ -248,7 +248,7 @@ app.get('/state/:selected_state', (req, res) => {
                 response = response.replace("!!!next_link!!!", '/state/' + states[next]);
                 //Modify image here:
                 response = response.replace("!!!src!!!", req.params.selected_state);
-                response = response.replace("!!!alt!!!", (req.params.selected_state + "flag"));
+                response = response.replace("!!!alt!!!", (req.params.selected_state + " flag"));
 
                 //Modify values for the table at the bottom of the file:
                 let data = "";
@@ -333,7 +333,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                 response = response.replace("!!!next_link!!!", '/energy-type/' + energy[next]);
                 //Modify image here:
                 response = response.replace("!!!src!!!", req.params.selected_energy_type);
-                response = response.replace("!!!alt!!!", (req.params.selected_energy_type + "image"));
+                response = response.replace("!!!alt!!!", (req.params.selected_energy_type + " image"));
 
                 //Modify values for the table at the bottom of the file:
                 query = "SELECT * ";
