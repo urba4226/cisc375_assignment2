@@ -11,7 +11,7 @@
     <script type="application/javascript" src="/scripts/energyvis.js"></script>
     <script type="application/javascript">
         // `energy_type` and object of consumption per year per state --> set these variables equal to appropriate value
-        var energy_type = !!!energy_type!!!;
+        var energy_type = '!!!energy_type!!!';
         var energy_counts = !!!energy_counts!!!;  // e.g. {AK: [...], AL: [...], AR: [...], ...}
     </script>
 </head>
@@ -49,7 +49,7 @@
                 </div>
                 <div class="spacer1"></div>
                 <div class="left">
-                    <img src="/images/noimage.jpg" alt="No Image" width="250" height="auto" /> <!-- change src and alt for energy type image -->
+                    <img src="/images/!!!src!!!.jpg" alt="!!!alt!!!" width="250" height="auto" /> <!-- change src and alt for energy type image -->
                 </div>
                 <div class="right">
                     <div id="snapshot"></div>
