@@ -246,6 +246,9 @@ app.get('/state/:selected_state', (req, res) => {
                 response = response.replace("!!!prev_link!!!", '/state/' + states[prev]);
                 response = response.replace("!!!next!!!", states[next]);
                 response = response.replace("!!!next_link!!!", '/state/' + states[next]);
+                //Modify image here:
+                response = response.replace("!!!src!!!", req.params.selected_state);
+                response = response.replace("!!!alt!!!", (req.params.selected_state + "flag"));
 
                 //Modify values for the table at the bottom of the file:
                 let data = "";
@@ -321,13 +324,16 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                 response = response.replace("!!!Header!!!", fullenergy[index]);
                 //Modify title to include energy type:
                 response = response.replace("!!!Title!!!", fullenergy[index]);
-                //Modify prev and next buttons here
+                //Modify prev and next buttons here:
                 let prev = (index - 1 + energy.length) % energy.length;
                 let next = (index + 1) % energy.length;
                 response = response.replace("!!!prev!!!", fullenergy[prev]);
                 response = response.replace("!!!prev_link!!!", '/energy-type/' + energy[prev]);
                 response = response.replace("!!!next!!!", fullenergy[next]);
                 response = response.replace("!!!next_link!!!", '/energy-type/' + energy[next]);
+                //Modify image here:
+                response = response.replace("!!!src!!!", req.params.selected_energy_type);
+                response = response.replace("!!!alt!!!", (req.params.selected_energy_type + "image"));
 
                 //Modify values for the table at the bottom of the file:
                 query = "SELECT * ";
