@@ -143,8 +143,7 @@ app.get('/year/:selected_year', (req, res) => {
                     state++;
                 });     
             
-                var prevYear = req.params.selected_year - 1;
-                var nextYear = parseInt(req.params.selected_year) + 1;
+                let year = parseInt(req.params.selected_year);
 
                 response = response.toString().replace('<tbody>', '<tbody>' + table);
                 response = response.toString().replace('US Energy Consumption</title>', req.params.selected_year + ' US Energy Consumption</title>');
@@ -155,21 +154,27 @@ app.get('/year/:selected_year', (req, res) => {
                 response = response.toString().replace('var nuclear_count', 'var nuclear_count = ' + nuclear_sum);
                 response = response.toString().replace('var petroleum_count', 'var petroleum_count = ' + petroleum_sum);
                 response = response.toString().replace('var renewable_count', 'var renewable_count = ' + renewable_sum );
-                
+
+                //Modify prev and next buttons here:
                 if(req.params.selected_year == 1960) {
-                    response = response.toString().replace('">Prev</a>', '/year/1960">Prev</a>');
-                    response = response.toString().replace('">Next</a>', '/year/' + nextYear + '">Next</a>');
+                    response = response.replace('!!!prev!!!', '1960');
+                    response = response.replace('!!!prev_link!!!', '/year/1960');
+                    response = response.replace('!!!next!!!', (year + 1));
+                    response = response.replace('!!!next_link!!!', '/year/' + (year + 1));
                 }
                 else if(req.params.selected_year == 2017){
-                    response = response.toString().replace('">Prev</a>', '/year/' + prevYear + '">Prev</a>');
-                    response = response.toString().replace('">Next</a>', '/year/2017">Next</a>');
+                    response = response.replace('!!!prev!!!', (year - 1));
+                    response = response.replace('!!!prev_link!!!', '/year/' + (year - 1));
+                    response = response.replace('!!!next!!!', '2017');
+                    response = response.replace('!!!next_link!!!', '/year/2017');
                 }
                 else {
-                    response = response.toString().replace('">Prev</a>', '/year/' + prevYear + '">Prev</a>');
-                    response = response.toString().replace('">Next</a>', '/year/' + nextYear + '">Next</a>');
+                    response = response.replace('!!!prev!!!', (year - 1));
+                    response = response.replace('!!!prev_link!!!', '/year/' + (year - 1));
+                    response = response.replace('!!!next!!!', (year + 1));
+                    response = response.replace('!!!next_link!!!', '/year/' + (year + 1));
                 }
                 WriteHtml(res, response);
-
             }
         });
     }).catch((err) => {
