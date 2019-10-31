@@ -295,7 +295,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
             }   //if
             else if (energy.indexOf(req.params.selected_energy_type) < 0)
             {
-                let msg = "Error: no data for energy type: ";
+                let msg = "Error: no data for energy type ";
                 msg = msg + req.params.selected_energy_type;
                 Write404Error(res, msg);
             }   //else if
