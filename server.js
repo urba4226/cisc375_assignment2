@@ -293,7 +293,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                 let msg = "Error: could not retrieve data from database";
                 Write404Error(res, msg);
             }   //if
-            else if (rows.length < 1)
+            else if (energy.indexOf(req.params.selected_energy_type) < 0)
             {
                 let msg = "Error: no data for energy type: ";
                 msg = msg + req.params.selected_energy_type;
